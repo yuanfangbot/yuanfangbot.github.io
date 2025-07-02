@@ -1,81 +1,67 @@
-#!/usr/bin/env python3
-"""
-行业报告自动生成工具
-根据数据源和模板自动生成各行业分类报告
-"""
-
 import json
-from pathlib import Path
+import os
+import argparse
 from datetime import datetime
 
-# 模板目录
-TEMPLATE_DIR = "industry_templates"
+def initialize_articles_file():
+    """初始化articles.json文件"""
+    if not os.path.exists('articles.json'):
+        with open('articles.json', 'w', encoding='utf-8') as f:
+            json.dump({"articles": []}, f, ensure_ascii=False, indent=2)
+        print("已创建新的articles.json文件")
 
-# 加载模板
-def load_template(template_name):
-    template_path = Path(TEMPLATE_DIR) / f"{template_name}.md"
-    with open(template_path, "r", encoding="utf-8") as f:
-        return f.read()
-
-# 生成报告
-def generate_report(data, template_type):
-    # 获取对应模板
-    template = load_template(template_type)
-    
-    # 生成动态内容
-    today = datetime.now().strftime("%Y-%m-%d")
-    report = template.replace("{date}", today)
-    
-    # 根据不同类型处理数据
-    if template_type == "global_top10":
-        # 处理全球TOP10行业数据
-        industries = "\n".join(
-            f"{i+1}. {ind['emoji']} **{ind['name']}** - {ind['value']}\n"
-            f"   - {ind['highlight1']}\n"
-            f"   - {ind['highlight2']}"
-            for i, ind in enumerate(data["industries"])
-        )
-        report = report.replace("{industries}", industries)
+def add_article(title=None, content=None):
+    try:
+        if not title or not content:
+            print("=== 添加新文章 ===")
+            title = input("请输入文章标题: ").strip()
+            content = input("请输入文章内容: ").strip()
+            
+            if not title or not content:
+                print("错误：标题和内容不能为空")
+                return
+            
+        # 初始化文件（如果不存在）
+        initialize_articles_file()
         
-    elif template_type == "hot_growth":
-        # 处理高增长行业数据
-        industries = []
-        for ind in data["industries"]:
-            item = f"{ind['emoji']} **{ind['name']}**\n"
-            item += f"   - {ind['trend1']}\n"
-            item += f"   - {ind['trend2']}\n"
-            if "resources" in ind:
-                item += "   \n🎓 **学习资源**:\n"
-                item += "   - " + "\n   - ".join(ind["resources"])
-            industries.append(item)
-        report = report.replace("{industries}", "\n\n".join(industries))
-    
-    # 其他模板类型的处理...
-    
-    return report
-
-# 主函数
-def main():
-    # 示例数据
-    sample_data = {
-        "global_top10": {
-            "industries": [
-                {
-                    "name": "人寿与健康保险",
-                    "value": "约 $5.53万亿",
-                    "emoji": "🏦",
-                    "highlight1": "人口老龄化驱动需求",
-                    "highlight2": "数字化保险服务崛起"
-                },
-                # 其他行业数据...
-            ]
-        },
-        # 其他分类数据...
-    }
-    
-    # 生成示例报告
-    report = generate_report(sample_data["global_top10"], "global_top10")
-    print(report)
+        # 读取现有文章
+        try:
+            with open('articles.json', 'r', encoding='utf-8') as f:
+                data = json.load(f)
+        except json.JSONDecodeError:
+            print("错误：articles.json文件格式不正确")
+            return
+            
+        # 生成新文章ID
+        new_id = 1
+        if data['articles']:
+            new_id = max(article['id'] for article in data['articles']) + 1
+        
+        # 添加新文章
+        new_article = {
+            "id": new_id,
+            "title": title,
+            "content": content,
+            "date": datetime.now().strftime("%Y-%m-%d")
+        }
+        data['articles'].append(new_article)
+        
+        # 保存更新
+        with open('articles.json', 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        
+        print(f"文章 '{title}' 已成功添加!")
+        
+    except Exception as e:
+        print(f"发生错误: {e}")
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description='文章生成工具')
+    parser.add_argument('--title', help='文章标题')
+    parser.add_argument('--content', help='文章内容')
+    args = parser.parse_args()
+    
+    if args.title and args.content:
+        add_article(args.title, args.content)
+    else:
+        add_article()
