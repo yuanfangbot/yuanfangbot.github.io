@@ -1,0 +1,82 @@
+# Butterfly Theme Config
+
+# 主题信息
+theme_info:
+  enable: true
+  version: false
+
+# 网站图标
+favicon: /img/favicon.png
+
+# 社交链接
+social:
+  fa-github: https://github.com/
+  fa-twitter: https://twitter.com/
+  fa-facebook: https://facebook.com/
+  fa-envelope: mailto:your@email.com
+
+# 页面布局
+menu:
+  首页: / || fas fa-home
+  归档: /archives/ || fas fa-archive
+  标签: /tags/ || fas fa-tags
+  分类: /categories/ || fas fa-folder-open
+  关于: /about/ || fas fa-user
+
+# 主题外观
+theme_color:
+  enable: true
+  main: "#49B1F5"
+  paginator: "#00C4B6"
+  button_hover: "#FF7242"
+  text_selection: "#49B1F5"
+  link_color: "#99A9BF"
+  link_hover: "#49B1F5"
+
+# 文章设置
+post:
+  excerpt_link: 阅读更多
+  copyright:
+    enable: true
+    decode: true
+    license: CC BY-NC-SA 4.0
+    license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+# AI内容生成设置
+ai_content:
+  enable: true
+  api_key: "YOUR_API_KEY" # 替换为实际API密钥
+  default_model: "gpt-3.5-turbo"
+  max_tokens: 2000
+  temperature: 0.7
+  categories:
+    - name: "热点新闻"
+      prompt: "生成一篇关于当前热点新闻的文章，包含背景、分析和观点"
+    - name: "技术教程"
+      prompt: "生成一篇详细的技术教程，包含步骤、代码示例和最佳实践"
+    - name: "生活指南"
+      prompt: "生成一篇实用的生活指南文章，提供有用的建议和技巧"
+
+# 评论系统
+comments:
+  use: [disqus] # 可替换为其他评论系统
+  disqus:
+    shortname: your-disqus-shortname
+
+# 搜索功能
+search:
+  enable: true
+  path: search.json
+  preload: false
+  CDN:
+
+# 统计与分析
+google_analytics:
+  enable: false
+  id: UA-XXXXX-X
+  CDN:
+
+baidu_analytics:
+  enable: false
+  id: your-baidu-id
+  CDN:
